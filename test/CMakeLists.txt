@@ -1,0 +1,5 @@
+add_executable(test_marching_squares test_marching_squares.cpp)
+target_link_libraries(test_marching_squares PRIVATE MarchingCube)
+
+add_executable(test_marching_cubes test_marching_cubes.cpp)
+target_link_libraries(test_marching_cubes PRIVATE MarchingCube)

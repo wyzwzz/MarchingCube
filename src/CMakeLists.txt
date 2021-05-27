@@ -1,0 +1,20 @@
+list(
+        APPEND
+        MarchingCube_SRCS
+        image.cpp
+        volume.cpp
+        render.cpp
+        ${PROJECT_SOURCE_DIR}/third_party/glad/src/glad.c
+)
+add_library(MarchingCube STATIC ${MarchingCube_SRCS})
+include(${PROJECT_SOURCE_DIR}/third_party/glfw.cmake)
+include(${PROJECT_SOURCE_DIR}/third_party/glm.cmake)
+target_include_directories(MarchingCube
+        PUBLIC
+        ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/third_party/glad/include
+        )
+target_link_libraries(MarchingCube
+        PUBLIC
+        glfw
+        glm::glm)
