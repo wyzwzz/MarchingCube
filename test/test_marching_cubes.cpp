@@ -4,6 +4,7 @@
 #include<MarchingCubes/volume.hpp>
 #include<Utils/volume_reader.hpp>
 #include<Render/surface_render.hpp>
+#include<Utils/tool.hpp>
 int main(int argc,char** argv)
 {
     mc::Volume<uint16_t> volume;
@@ -12,11 +13,12 @@ int main(int argc,char** argv)
         volume.setData(std::move(volume_data.data));
         volume.setVolumeXYZ(volume_data.dim[0], volume_data.dim[1], volume_data.dim[2]);
     }
-    auto isosurface=volume.getIsoSurface(16);
+
+    auto isosurface=volume.getIsoSurface(1500);
 
     mc::SurfaceRenderer renderer;
 
-    renderer.render(isosurface);
+//    renderer.render(isosurface);
 
     return 0;
 }

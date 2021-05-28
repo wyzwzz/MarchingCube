@@ -10,7 +10,6 @@ class Point{
 public:
     Point()=default;
     std::array<T,dim> pos;
-
 };
 
 template <class T>
