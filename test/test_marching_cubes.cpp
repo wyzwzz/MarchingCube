@@ -18,7 +18,7 @@ int main(int argc,char** argv)
 
     mc::SurfaceRenderer renderer;
 
-//    renderer.render(isosurface);
+    renderer.render(isosurface);
 
     return 0;
 }

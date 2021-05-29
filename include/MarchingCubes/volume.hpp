@@ -87,6 +87,7 @@ namespace mc{
             interpolation=[](const Node& n1,const Node& n2,T value)->Point3D<float>{
                 assert((n1.value>value && n2.value<=value) || (n2.value>value && n1.value<=value));
                 Point3D<float> p;
+                assert(n1.value!=n2.value);
                 float a=float(value-n2.value)/(n1.value-n2.value);
                 p.pos[0]=a*n1.x+(1.f-a)*n2.x;
                 p.pos[1]=a*n1.y+(1.f-a)*n2.y;
@@ -143,8 +144,8 @@ namespace mc{
                                 point1=interpolation(values[5],values[1],isovalue);
                                 point2=interpolation(values[7],values[3],isovalue);
                                 point3=interpolation(values[7],values[6],isovalue);
-                                iso_surface.addTriangle(Triangle<float,3>{point0,point1,point2});
-                                iso_surface.addTriangle(Triangle<float,3>{point0,point2,point3});
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point2,point1});
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point3,point2});
                             }
                             else if(code==cube_case_2b){
                                 Point3D<float> point0=interpolation(values[5],values[1],isovalue);
@@ -154,8 +155,8 @@ namespace mc{
                                 Point3D<float> point4=interpolation(values[6],values[4],isovalue);
                                 Point3D<float> point5=interpolation(values[6],values[7],isovalue);
                                 iso_surface.addTriangle(Triangle<float,3>{point0,point1,point4});
-                                iso_surface.addTriangle(Triangle<float,3>{point0,point3,point4});
-                                iso_surface.addTriangle(Triangle<float,3>{point0,point2,point5});
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point4,point3});
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point5,point2});
                                 iso_surface.addTriangle(Triangle<float,3>{point0,point3,point5});
                             }
                             else if(code==cube_case_2c){
@@ -173,13 +174,44 @@ namespace mc{
                         case 3:{
                             assert(code==cube_case_3a || code==cube_case_3b || code==cube_case_3c);
                             if(code==cube_case_3a){
-
+                                Point3D<float> point0=interpolation(values[4],values[0],isovalue);
+                                Point3D<float> point1=interpolation(values[5],values[1],isovalue);
+                                Point3D<float> point2=interpolation(values[6],values[2],isovalue);
+                                Point3D<float> point3=interpolation(values[5],values[7],isovalue);
+                                Point3D<float> point4=interpolation(values[6],values[7],isovalue);
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point2,point1});
+                                iso_surface.addTriangle(Triangle<float,3>{point1,point2,point4});
+                                iso_surface.addTriangle(Triangle<float,3>{point1,point4,point3});
                             }
                             else if(code==cube_case_3b){
-
+                                Point3D<float> point0=interpolation(values[3],values[2],isovalue);
+                                Point3D<float> point1=interpolation(values[3],values[1],isovalue);
+                                Point3D<float> point2=interpolation(values[4],values[0],isovalue);
+                                Point3D<float> point3=interpolation(values[4],values[5],isovalue);
+                                Point3D<float> point4=interpolation(values[4],values[6],isovalue);
+                                Point3D<float> point5=interpolation(values[7],values[6],isovalue);
+                                Point3D<float> point6=interpolation(values[7],values[5],isovalue);
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point1,point2});
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point2,point4});
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point4,point5});
+                                iso_surface.addTriangle(Triangle<float,3>{point1,point3,point2});
+                                iso_surface.addTriangle(Triangle<float,3>{point1,point6,point3});
                             }
                             else if(code==cube_case_3c){
-
+                                Point3D<float> point0=interpolation(values[3],values[2],isovalue);
+                                Point3D<float> point1=interpolation(values[3],values[1],isovalue);
+                                Point3D<float> point2=interpolation(values[5],values[1],isovalue);
+                                Point3D<float> point3=interpolation(values[6],values[2],isovalue);
+                                Point3D<float> point4=interpolation(values[3],values[7],isovalue);
+                                Point3D<float> point5=interpolation(values[5],values[4],isovalue);
+                                Point3D<float> point6=interpolation(values[6],values[4],isovalue);
+                                Point3D<float> point7=interpolation(values[6],values[7],isovalue);
+                                Point3D<float> point8=interpolation(values[5],values[7],isovalue);
+                                iso_surface.addTriangle(Triangle<float,3>{point4,point7,point8});
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point1,point2});
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point2,point5});
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point5,point3});
+                                iso_surface.addTriangle(Triangle<float,3>{point3,point5,point6});
                             }
                             break;
                         }
@@ -187,57 +219,175 @@ namespace mc{
                             assert(code==cube_case_4a || code==cube_case_4b || code==cube_case_4c
                             ||  code==cube_case_4d || code==cube_case_4e || code==cube_case_4f || code==cube_case_4g);
                             if(code==cube_case_4a){
-
+                                Point3D<float> point0=interpolation(values[4],values[0],isovalue);
+                                Point3D<float> point1=interpolation(values[5],values[1],isovalue);
+                                Point3D<float> point2=interpolation(values[6],values[2],isovalue);
+                                Point3D<float> point3=interpolation(values[7],values[1],isovalue);
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point2,point1});
+                                iso_surface.addTriangle(Triangle<float,3>{point1,point2,point3});
                             }
                             else if(code==cube_case_4b){
-
+                                Point3D<float> point0=interpolation(values[3],values[2],isovalue);
+                                Point3D<float> point1=interpolation(values[3],values[1],isovalue);
+                                Point3D<float> point2=interpolation(values[5],values[1],isovalue);
+                                Point3D<float> point3=interpolation(values[6],values[2],isovalue);
+                                Point3D<float> point4=interpolation(values[5],values[4],isovalue);
+                                Point3D<float> point5=interpolation(values[6],values[4],isovalue);
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point1,point2});
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point2,point4});
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point4,point3});
+                                iso_surface.addTriangle(Triangle<float,3>{point3,point4,point5});
                             }
                             else if(code==cube_case_4c){
-
+                                Point3D<float> point0=interpolation(values[1],values[0],isovalue);
+                                Point3D<float> point1=interpolation(values[2],values[0],isovalue);
+                                Point3D<float> point2=interpolation(values[2],values[3],isovalue);
+                                Point3D<float> point3=interpolation(values[1],values[3],isovalue);
+                                Point3D<float> point4=interpolation(values[5],values[4],isovalue);
+                                Point3D<float> point5=interpolation(values[6],values[4],isovalue);
+                                Point3D<float> point6=interpolation(values[6],values[7],isovalue);
+                                Point3D<float> point7=interpolation(values[5],values[7],isovalue);
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point5,point1});
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point4,point5});
+                                iso_surface.addTriangle(Triangle<float,3>{point3,point2,point6});
+                                iso_surface.addTriangle(Triangle<float,3>{point3,point6,point7});
                             }
                             else if(code==cube_case_4d){
-
+                                Point3D<float> point0=interpolation(values[2],values[0],isovalue);
+                                Point3D<float> point1=interpolation(values[3],values[1],isovalue);
+                                Point3D<float> point2=interpolation(values[5],values[1],isovalue);
+                                Point3D<float> point3=interpolation(values[2],values[6],isovalue);
+                                Point3D<float> point4=interpolation(values[5],values[4],isovalue);
+                                Point3D<float> point5=interpolation(values[7],values[6],isovalue);
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point1,point2});
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point2,point4});
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point4,point3});
+                                iso_surface.addTriangle(Triangle<float,3>{point3,point4,point5});
                             }
                             else if(code==cube_case_4e){
-
+                                Point3D<float> point0=interpolation(values[0],values[1],isovalue);
+                                Point3D<float> point1=interpolation(values[3],values[1],isovalue);
+                                Point3D<float> point2=interpolation(values[0],values[4],isovalue);
+                                Point3D<float> point3=interpolation(values[5],values[1],isovalue);
+                                Point3D<float> point4=interpolation(values[2],values[6],isovalue);
+                                Point3D<float> point5=interpolation(values[3],values[7],isovalue);
+                                Point3D<float> point6=interpolation(values[5],values[4],isovalue);
+                                Point3D<float> point7=interpolation(values[5],values[7],isovalue);
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point1,point3});
+                                iso_surface.addTriangle(Triangle<float,3>{point2,point6,point4});
+                                iso_surface.addTriangle(Triangle<float,3>{point4,point6,point7});
+                                iso_surface.addTriangle(Triangle<float,3>{point4,point7,point5});
                             }
                             else if(code==cube_case_4f){
-
+                                Point3D<float> point0=interpolation(values[1],values[0],isovalue);
+                                Point3D<float> point1=interpolation(values[2],values[0],isovalue);
+                                Point3D<float> point2=interpolation(values[2],values[3],isovalue);
+                                Point3D<float> point3=interpolation(values[1],values[3],isovalue);
+                                Point3D<float> point4=interpolation(values[4],values[0],isovalue);
+                                Point3D<float> point5=interpolation(values[1],values[5],isovalue);
+                                Point3D<float> point6=interpolation(values[2],values[6],isovalue);
+                                Point3D<float> point7=interpolation(values[7],values[3],isovalue);
+                                Point3D<float> point8=interpolation(values[4],values[5],isovalue);
+                                Point3D<float> point9=interpolation(values[4],values[6],isovalue);
+                                Point3D<float> point10=interpolation(values[7],values[6],isovalue);
+                                Point3D<float> point11=interpolation(values[7],values[5],isovalue);
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point4,point1});
+                                iso_surface.addTriangle(Triangle<float,3>{point2,point7,point3});
+                                iso_surface.addTriangle(Triangle<float,3>{point5,point11,point8});
+                                iso_surface.addTriangle(Triangle<float,3>{point6,point9,point10});
                             }
                             else if(code==cube_case_4g){
-
+                                Point3D<float> point0=interpolation(values[2],values[0],isovalue);
+                                Point3D<float> point1=interpolation(values[3],values[1],isovalue);
+                                Point3D<float> point2=interpolation(values[4],values[0],isovalue);
+                                Point3D<float> point3=interpolation(values[3],values[7],isovalue);
+                                Point3D<float> point4=interpolation(values[4],values[5],isovalue);
+                                Point3D<float> point5=interpolation(values[6],values[7],isovalue);
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point1,point2});
+                                iso_surface.addTriangle(Triangle<float,3>{point1,point4,point2});
+                                iso_surface.addTriangle(Triangle<float,3>{point1,point3,point4});
+                                iso_surface.addTriangle(Triangle<float,3>{point3,point5,point4});
                             }
                             break;
                         }
                         case 5:{
                             assert(code==cube_case_5a || code==cube_case_5b || code==cube_case_5c);
                             if(code==cube_case_5a){
-
+                                Point3D<float> point0=interpolation(values[0],values[4],isovalue);
+                                Point3D<float> point1=interpolation(values[1],values[5],isovalue);
+                                Point3D<float> point2=interpolation(values[2],values[6],isovalue);
+                                Point3D<float> point3=interpolation(values[7],values[6],isovalue);
+                                Point3D<float> point4=interpolation(values[7],values[5],isovalue);
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point3,point2});
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point4,point3});
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point1,point4});
                             }
                             else if(code==cube_case_5b){
-
+                                Point3D<float> point0=interpolation(values[2],values[3],isovalue);
+                                Point3D<float> point1=interpolation(values[1],values[3],isovalue);
+                                Point3D<float> point2=interpolation(values[0],values[4],isovalue);
+                                Point3D<float> point3=interpolation(values[5],values[4],isovalue);
+                                Point3D<float> point4=interpolation(values[6],values[4],isovalue);
+                                Point3D<float> point5=interpolation(values[6],values[7],isovalue);
+                                Point3D<float> point6=interpolation(values[5],values[7],isovalue);
+                                iso_surface.addTriangle(Triangle<float,3>{point2,point3,point4});
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point5,point1});
+                                iso_surface.addTriangle(Triangle<float,3>{point1,point5,point6});
                             }
                             else if(code==cube_case_5c){
-
+                                Point3D<float> point0=interpolation(values[2],values[3],isovalue);
+                                Point3D<float> point1=interpolation(values[1],values[3],isovalue);
+                                Point3D<float> point2=interpolation(values[1],values[5],isovalue);
+                                Point3D<float> point3=interpolation(values[2],values[6],isovalue);
+                                Point3D<float> point4=interpolation(values[4],values[5],isovalue);
+                                Point3D<float> point5=interpolation(values[4],values[6],isovalue);
+                                Point3D<float> point6=interpolation(values[7],values[6],isovalue);
+                                Point3D<float> point7=interpolation(values[7],values[5],isovalue);
+                                Point3D<float> point8=interpolation(values[7],values[3],isovalue);
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point8,point1});
+                                iso_surface.addTriangle(Triangle<float,3>{point2,point7,point4});
+                                iso_surface.addTriangle(Triangle<float,3>{point3,point5,point6});
                             }
                             break;
                         }
                         case 6:{
                             assert(code==cube_case_6a || code==cube_case_6b || code==cube_case_6c);
                             if(code==cube_case_6a){
-
+                                Point3D<float> point0=interpolation(values[1],values[5],isovalue);
+                                Point3D<float> point1=interpolation(values[3],values[7],isovalue);
+                                Point3D<float> point2=interpolation(values[4],values[5],isovalue);
+                                Point3D<float> point3=interpolation(values[6],values[7],isovalue);
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point1,point2});
+                                iso_surface.addTriangle(Triangle<float,3>{point1,point3,point2});
                             }
                             else if(code==cube_case_6b){
-
+                                Point3D<float> point0=interpolation(values[1],values[5],isovalue);
+                                Point3D<float> point1=interpolation(values[2],values[6],isovalue);
+                                Point3D<float> point2=interpolation(values[4],values[5],isovalue);
+                                Point3D<float> point3=interpolation(values[4],values[6],isovalue);
+                                Point3D<float> point4=interpolation(values[7],values[6],isovalue);
+                                Point3D<float> point5=interpolation(values[7],values[5],isovalue);
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point5,point2});
+                                iso_surface.addTriangle(Triangle<float,3>{point1,point3,point4});
                             }
                             else if(code==cube_case_6c){
-
+                                Point3D<float> point0=interpolation(values[0],values[2],isovalue);
+                                Point3D<float> point1=interpolation(values[3],values[2],isovalue);
+                                Point3D<float> point2=interpolation(values[1],values[5],isovalue);
+                                Point3D<float> point3=interpolation(values[6],values[2],isovalue);
+                                Point3D<float> point4=interpolation(values[4],values[5],isovalue);
+                                Point3D<float> point5=interpolation(values[7],values[5],isovalue);
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point3,point1});
+                                iso_surface.addTriangle(Triangle<float,3>{point2,point5,point4});
                             }
                             break;
                         }
                         case 7:{
                             assert(code==cube_case_7);
-
+                                Point3D<float> point0=interpolation(values[2],values[6],isovalue);
+                                Point3D<float> point1=interpolation(values[4],values[6],isovalue);
+                                Point3D<float> point2=interpolation(values[7],values[6],isovalue);
+                                iso_surface.addTriangle(Triangle<float,3>{point0,point1,point2});
                             break;
                         }
                         case 8:{

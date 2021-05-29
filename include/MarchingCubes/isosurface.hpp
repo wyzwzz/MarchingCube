@@ -42,7 +42,7 @@ namespace mc {
     }
 
     inline void IsoSurface<float>::addTriangle(const Triangle3D<float> &tri) {
-
+        triangles.push_back(tri);
     }
 
 
