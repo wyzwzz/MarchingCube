@@ -14,7 +14,7 @@ int main(int argc,char** argv)
         volume.setVolumeXYZ(volume_data.dim[0], volume_data.dim[1], volume_data.dim[2]);
     }
 
-    auto isosurface=volume.getIsoSurface(1500);
+    auto isosurface=volume.getIsoSurface(2500);
 
     mc::SurfaceRenderer renderer;
 

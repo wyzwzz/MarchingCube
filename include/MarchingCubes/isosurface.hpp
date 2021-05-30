@@ -8,7 +8,7 @@
 #include<Utils/triangle.hpp>
 #include<vector>
 #include<iostream>
-
+#include<glm/glm.hpp>
 namespace mc {
     template<class T>
     class IsoSurface;
@@ -20,6 +20,7 @@ namespace mc {
 
         void addTriangle(const Triangle3D<float>& tri);
 
+        void saveToObj() const;
     private:
 
         std::vector<Triangle3D<float>> triangles;
@@ -33,9 +34,20 @@ namespace mc {
         vertices.reserve(triangles.size() * 3 * sizeof(Point<float, 3>));
         std::cout << "triangles num: " << triangles.size() << std::endl;
         for (auto &triangle:triangles) {
-            vertices.push_back(triangle.vertices[0].pos);
-            vertices.push_back(triangle.vertices[1].pos);
-            vertices.push_back(triangle.vertices[2].pos);
+            auto v0=triangle.vertices[0].pos;
+            auto v1=triangle.vertices[1].pos;
+            auto v2=triangle.vertices[2].pos;
+            glm::vec3 _v0={v0[0],v0[1],v0[2]};
+            glm::vec3 _v1={v1[0],v1[1],v1[2]};
+            glm::vec3 _v2={v2[0],v2[1],v2[2]};
+            glm::vec3 _n=glm::normalize(glm::cross(_v1-_v0,_v2-_v0));
+            std::array<float,3> n={_n.x,_n.y,_n.z};
+            vertices.push_back(v0);
+            vertices.push_back(n);
+            vertices.push_back(v1);
+            vertices.push_back(n);
+            vertices.push_back(v2);
+            vertices.push_back(n);
         }
         std::cout << "all vertices size: " << vertices.size() << std::endl;
         return vertices;

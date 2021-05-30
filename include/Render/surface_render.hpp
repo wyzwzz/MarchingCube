@@ -11,22 +11,27 @@
 
 namespace mc{
 
+    class Camera;
     class SurfaceRenderer{
     public:
-        SurfaceRenderer()=default;
+        SurfaceRenderer(int w=1200,int h=900);
+        ~SurfaceRenderer();
         void render(const IsoSurface<float>& isosurface);
 
     private:
         void initGL();
         void render();
         void createShader();
+        void setupControl();
     private:
+        std::unique_ptr<mc::Camera> camera;
         std::unique_ptr<mc::Shader> shader;
         size_t vertex_num;
         GLuint vao;
         GLuint vbo;
 
         GLFWwindow *window;
+        int window_w,window_h;
     };
 
 
