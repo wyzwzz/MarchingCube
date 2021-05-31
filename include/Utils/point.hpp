@@ -12,6 +12,14 @@ public:
     std::array<T,dim> pos;
 };
 
+template <>
+class Point<float,3>{
+public:
+    Point()=default;
+    std::array<float,3> pos;
+//    std::array<uint16_t ,4> idx;
+};
+
 template <class T>
 using Point2D = Point<T,2> ;
 template <class T>
