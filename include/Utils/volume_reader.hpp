@@ -8,6 +8,8 @@
 #include<array>
 #include<fstream>
 #include<iostream>
+#include<limits>
+#include<algorithm>
 namespace mc{
 
     template<class T>
@@ -18,6 +20,40 @@ namespace mc{
         std::vector<T> data;
         std::array<uint32_t,3> dim;
     };
+
+    /**
+     * T->uint8_t
+     * first convert to 0 - 1.f then multiply 255
+     * new_value=(old_value-min_value)/(max_value-min_value) * 255;
+     */
+    template <class T>
+    VolumeData<uint8_t> ConvertToUint8Raw(const VolumeData<T>& volume_data){
+        VolumeData<uint8_t> n_volume_data;
+        n_volume_data.dim=volume_data.dim;
+        n_volume_data.data.assign(volume_data.data.size(),255);
+        T min_value,max_value;
+        min_value=std::numeric_limits<T>::max();
+        max_value=std::numeric_limits<T>::min();
+        std::cout<<"max_value for "<<typeid(T).name()<<" is "<<min_value<<", min_value is "<<max_value<<std::endl;
+        auto p_min=std::min_element(volume_data.data.cbegin(),volume_data.data.cend());
+        auto p_max=std::max_element(volume_data.data.cbegin(),volume_data.data.cend());
+        min_value=*p_min;
+        max_value=*p_max;
+        std::cout<<"volume_data's max_value is "<<max_value<<", min_value is "<<min_value<<std::endl;
+        for(size_t i=0;i<volume_data.data.size();i++){
+            n_volume_data.data[i]*=1.f*(volume_data.data[i]-min_value)/(max_value-min_value);//may not suit for double
+        }
+        return n_volume_data;
+    }
+
+//    template<class T>
+//    void ConvertToUint8Raw(VolumeData<T>& volume_data){
+//        if(typeid(T)==typeid(uint8_t)){
+//            return;
+//        }
+//        std::cout<<"but can't convert class VolumeData<"<<typeid(T).name()<<"> to class VolumeData<uint8_t> !"<<std::endl;
+//    }
+
 
     template<class T>
     VolumeData<T> ReadRawVolume(const char* path,int raw_x,int raw_y,int raw_z){
@@ -35,7 +71,7 @@ namespace mc{
             in.close();
             return volume_data;
         }
-        in.seekg(std::ios::beg);
+        in.seekg(0,std::ios::beg);
         volume_data.data.resize(file_size,0);
         in.read(reinterpret_cast<char*>(volume_data.data.data()),file_size);
         in.close();
