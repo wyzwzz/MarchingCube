@@ -21,3 +21,4 @@ target_link_libraries(LibMarchingCube
         glm::glm
         OpenMP::OpenMP_CXX
         )
+target_compile_features(LibMarchingCube PRIVATE cxx_std_11)
