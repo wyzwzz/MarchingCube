@@ -1,8 +1,8 @@
 add_executable(test_marching_squares test_marching_squares.cpp)
-target_link_libraries(test_marching_squares PRIVATE MarchingCube)
+target_link_libraries(test_marching_squares PRIVATE LibMarchingCube)
 
 add_executable(test_marching_cubes test_marching_cubes.cpp)
-target_link_libraries(test_marching_cubes PRIVATE MarchingCube)
+target_link_libraries(test_marching_cubes PRIVATE LibMarchingCube)
 
 add_executable(test_volume_render test_volume_render.cpp)
-target_link_libraries(test_volume_render PRIVATE MarchingCube)
+target_link_libraries(test_volume_render PRIVATE LibMarchingCube)
