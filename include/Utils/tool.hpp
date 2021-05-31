@@ -7,13 +7,13 @@
 
 #include<chrono>
 
-#define START_CPU_TIMER \
-{auto _start=std::chrono::steady_clock::now();
+#define START_CPU_TIMER_ONCE \
+auto _start=std::chrono::steady_clock::now();
 
-#define END_CPU_TIMER \
+#define END_CPU_TIMER_ONCE \
 auto _end=std::chrono::steady_clock::now();\
 auto _t=std::chrono::duration_cast<std::chrono::milliseconds>(_end-_start);\
-std::cout<<"CPU cost time : "<<_t.count()<<"ms"<<std::endl;}
+std::cout<<"CPU cost time : "<<_t.count()<<"ms"<<std::endl;
 
 
 

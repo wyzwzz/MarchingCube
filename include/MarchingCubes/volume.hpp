@@ -8,9 +8,11 @@
 #include<Utils/common.hpp>
 #include<MarchingCubes/isosurface.hpp>
 #include<Utils/lookup_table.hpp>
+#include<Utils/tool.hpp>
 #include<cassert>
 #include<algorithm>
 #include<functional>
+#include<omp.h>
 namespace mc{
     template<class T>
     class Volume{
@@ -74,6 +76,7 @@ namespace mc{
 
     template<class T>
     inline IsoSurface<float> Volume<T>::getIsoSurface(T isovalue) const {
+
         std::function<Point3D<float>(const Node& n1,const Node& n2,T value)> interpolation;
         if(interpolation_method==InterpolationMethod::MidPoint){
             interpolation=[](const Node& n1,const Node& n2,T value)->Point3D<float>{
@@ -115,6 +118,7 @@ namespace mc{
 //            assert(layer.u_slice.size()==0);
             std::copy(volume_data.begin()+slice_size*(z+1),volume_data.begin()+slice_size*(z+2),layer.u_slice.data());
             assert(layer.u_slice.size()==layer.d_slice.size());
+#pragma omp parallel for
             for(int y=0;y<volume_y-1;y++){
                 for(int x=0;x<volume_x-1;x++){
                     std::array<Node,8> values=layer.getValue(x,y);
@@ -403,7 +407,9 @@ namespace mc{
 
 
 
+
         return iso_surface;
+
     }
 
     template<class T>

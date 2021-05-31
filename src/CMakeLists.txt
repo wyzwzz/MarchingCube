@@ -9,6 +9,7 @@ list(
 add_library(MarchingCube STATIC ${MarchingCube_SRCS})
 include(${PROJECT_SOURCE_DIR}/third_party/glfw.cmake)
 include(${PROJECT_SOURCE_DIR}/third_party/glm.cmake)
+find_package(OpenMP)
 target_include_directories(MarchingCube
         PUBLIC
         ${PROJECT_SOURCE_DIR}/include
@@ -17,4 +18,6 @@ target_include_directories(MarchingCube
 target_link_libraries(MarchingCube
         PUBLIC
         glfw
-        glm::glm)
+        glm::glm
+        OpenMP::OpenMP_CXX
+        )

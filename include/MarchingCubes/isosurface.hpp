@@ -9,6 +9,7 @@
 #include<vector>
 #include<iostream>
 #include<glm/glm.hpp>
+#include<mutex>
 namespace mc {
     template<class T>
     class IsoSurface;
@@ -16,12 +17,18 @@ namespace mc {
     template<>
     class IsoSurface<float> {
     public:
+        IsoSurface()=default;
+        IsoSurface<float>(const IsoSurface<float>& surface){
+            triangles=surface.triangles;
+            isovalue=surface.isovalue;
+        }
         std::vector<std::array<float, 3>> getAllVertices() const;
 
         void addTriangle(const Triangle3D<float>& tri);
 
         void saveToObj() const;
     private:
+        std::mutex mtx;
 
         std::vector<Triangle3D<float>> triangles;
 
@@ -54,6 +61,7 @@ namespace mc {
     }
 
     inline void IsoSurface<float>::addTriangle(const Triangle3D<float> &tri) {
+        std::unique_lock<std::mutex> lk(mtx);
         triangles.push_back(tri);
     }
 

@@ -3,3 +3,6 @@ target_link_libraries(test_marching_squares PRIVATE MarchingCube)
 
 add_executable(test_marching_cubes test_marching_cubes.cpp)
 target_link_libraries(test_marching_cubes PRIVATE MarchingCube)
+
+add_executable(test_volume_render test_volume_render.cpp)
+target_link_libraries(test_volume_render PRIVATE MarchingCube)
