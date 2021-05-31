@@ -5,7 +5,7 @@
 * cmake >= 3.16
 * OpenMP support (optional)
 
-##third_party
+## third_party
 * glad
 * glfw
 * glm 
