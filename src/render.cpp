@@ -8,6 +8,7 @@
 #include<Render/camera.hpp>
 #include<Render/transfer_function.h>
 #include<functional>
+#include<json.hpp>
 namespace mc{
     SurfaceRenderer::SurfaceRenderer(int w,int h):window_w(w),window_h(h){
 //        std::cout<<__FUNCTION__ <<std::endl;
@@ -128,6 +129,11 @@ namespace mc{
     void glfw_keyboard_callback(GLFWwindow *window, int key, int scancode, int action, int mods){
         keyboard_callback(window,key,scancode,action,mods);
     }
+    std::function<void(GLFWwindow* window,int,const char**)> drop_file_callback;
+    void glfw_drop_file_callback(GLFWwindow* window,int count,const char** df){
+        drop_file_callback(window,count,df);
+    }
+
     void SurfaceRenderer::setupControl() {
 //        std::cout<<__FUNCTION__ <<std::endl;
         camera=std::make_unique<mc::FPSCamera>(glm::vec3{250.f,250.f,600.f});
@@ -190,6 +196,7 @@ namespace mc{
         glfwSetCursorPosCallback(window,glfw_mouse_move_callback);
         glfwSetScrollCallback(window,glfw_scroll_callback);
         glfwSetKeyCallback(window,glfw_keyboard_callback);
+
     }
 
     SurfaceRenderer::~SurfaceRenderer() {
@@ -382,7 +389,33 @@ namespace mc{
                 glfwSetWindowShouldClose(window, true);
             }
         };
-
+        drop_file_callback=[&](GLFWwindow* window,int count,const char** df){
+            std::map<uint8_t, std::array<float, 4>> color_map;
+            try{
+                using json = nlohmann::json;
+                std::ifstream in(df[0]);
+                if(!in.is_open()){
+                    throw std::runtime_error("can't open tf config file!");
+                }
+                json j;
+                in>>j;
+                if(j.find("tf")!=j.end()){
+                    auto points=j["tf"];
+                    for(auto it=points.begin();it!=points.end();it++){
+                        int key=std::stoi(it.key());
+                        auto values=it.value();
+                        color_map[key]={values[0],values[1],values[2],values[3]};
+                    }
+                }
+                else{
+                    throw std::runtime_error("error tf config file!");
+                }
+            }
+            catch (const std::exception& err) {
+                std::cout<<err.what()<<std::endl;
+            }
+            this->setupTransferFunc(TransferFunc(color_map));
+        };
         process_input=[&](GLFWwindow *window,float delta_time){
             if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
                 camera->processKeyEvent(mc::CameraDefinedKey::Forward, delta_time);
@@ -409,6 +442,7 @@ namespace mc{
         glfwSetCursorPosCallback(window,glfw_mouse_move_callback);
         glfwSetScrollCallback(window,glfw_scroll_callback);
         glfwSetKeyCallback(window,glfw_keyboard_callback);
+        glfwSetDropCallback(window,glfw_drop_file_callback);
     }
 
     void VolumeRender::deleteGLResource() {

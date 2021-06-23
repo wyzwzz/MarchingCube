@@ -12,6 +12,7 @@ include(${PROJECT_SOURCE_DIR}/third_party/glm.cmake)
 find_package(OpenMP)
 target_include_directories(LibMarchingCube
         PUBLIC
+        ${PROJECT_SOURCE_DIR}/third_party
         ${PROJECT_SOURCE_DIR}/include
         ${PROJECT_SOURCE_DIR}/third_party/glad/include
         )
