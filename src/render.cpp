@@ -9,6 +9,7 @@
 #include<Render/transfer_function.h>
 #include<functional>
 #include<json.hpp>
+#include"shaders.hpp"
 namespace mc{
     SurfaceRenderer::SurfaceRenderer(int w,int h):window_w(w),window_h(h){
 //        std::cout<<__FUNCTION__ <<std::endl;
@@ -64,8 +65,9 @@ namespace mc{
 
     void SurfaceRenderer::createShader() {
 //        std::cout<<__FUNCTION__ <<std::endl;
-        shader=std::make_unique<mc::Shader>("C:\\Users\\wyz\\projects\\MarchingCubes\\src\\shader\\phone_shading_v.glsl",
-                                            "C:\\Users\\wyz\\projects\\MarchingCubes\\src\\shader\\phone_shading_f.glsl");
+        shader=std::make_unique<mc::Shader>();
+        shader->setShader(shader::phone_shading_v,
+                          shader::phone_shading_f);
         shader->use();
         shader->setFloat("ka",0.3f);
         shader->setFloat("kd",0.7f);
@@ -222,10 +224,12 @@ namespace mc{
 
     void VolumeRender::setupShader() {
 //        std::cout<<__FUNCTION__ <<std::endl;
-        this->raycast_pos_shader=std::make_unique<mc::Shader>("C:\\Users\\wyz\\projects\\MarchingCubes\\src\\shader\\raycast_pos_v.glsl",
-                                                              "C:\\Users\\wyz\\projects\\MarchingCubes\\src\\shader\\raycast_pos_f.glsl");
-        this->raycasting_shader=std::make_unique<mc::Shader>("C:\\Users\\wyz\\projects\\MarchingCubes\\src\\shader\\raycasting_v.glsl",
-                                                             "C:\\Users\\wyz\\projects\\MarchingCubes\\src\\shader\\raycasting_f.glsl");
+        this->raycast_pos_shader=std::make_unique<mc::Shader>();
+        this->raycast_pos_shader->setShader(shader::raycast_pos_v,
+                                            shader::raycast_pos_f);
+        this->raycasting_shader=std::make_unique<mc::Shader>();
+        this->raycasting_shader->setShader(shader::raycasting_v,
+                                           shader::raycasting_f);
     }
 
     void VolumeRender::setupVolumeData(const VolumeData<uint8_t> &volume_data) {

@@ -1,0 +1,15 @@
+#pragma once
+
+namespace shader{
+    const char* phone_shading_v=R"(@phone_shading_v.glsl@)";
+
+    const char* phone_shading_f=R"(@phone_shading_f.glsl@)";
+
+    const char* raycast_pos_v=R"(@raycast_pos_v.glsl@)";
+
+    const char* raycast_pos_f=R"(@raycast_pos_f.glsl@)";
+
+    const char* raycasting_v=R"(@raycasting_v.glsl@)";
+
+    const char* raycasting_f=R"(@raycasting_f.glsl@)";
+}
