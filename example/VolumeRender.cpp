@@ -9,6 +9,7 @@
 #include<json.hpp>
 #include<fstream>
 
+
 int main(int argc, char **argv) {
 
     cmdline::parser cmd;
@@ -16,6 +17,8 @@ int main(int argc, char **argv) {
     cmd.add<int>("raw_x", 'x', "raw data x", true);
     cmd.add<int>("raw_y", 'y', "raw data y", true);
     cmd.add<int>("raw_z", 'z', "raw data z", true);
+    cmd.add<std::string>("raw_data_type",'d',"raw volume data's type",true,"uint8",
+                         cmdline::oneof<std::string>("uint8","uint16","int16","uint32","int32"));
     cmd.add<std::string>("tf_file", 't', "transfer function config file", true);
     cmd.parse_check(argc, argv);
 
@@ -23,13 +26,33 @@ int main(int argc, char **argv) {
     auto raw_x = cmd.get<int>("raw_x");
     auto raw_y = cmd.get<int>("raw_y");
     auto raw_z = cmd.get<int>("raw_z");
+    auto voxel_type=cmd.get<std::string>("raw_data_type");
     auto tf_file = cmd.get<std::string>("tf_file");
+
+
     try {
-        auto volume_data = mc::ReadRawVolume<uint16_t>(raw_file.c_str(), raw_x, raw_y, raw_z);
 
         mc::VolumeRender volume_render;
-
-        volume_render.setupVolumeData(mc::ConvertToUint8Raw(volume_data));
+        if(voxel_type=="uint8"){
+            auto volume_data = mc::ReadRawVolume<uint8_t>(raw_file.c_str(), raw_x, raw_y, raw_z);
+            volume_render.setupVolumeData(mc::ConvertToUint8Raw(volume_data));
+        }
+        else if(voxel_type=="uint16"){
+            auto volume_data = mc::ReadRawVolume<uint16_t>(raw_file.c_str(), raw_x, raw_y, raw_z);
+            volume_render.setupVolumeData(mc::ConvertToUint8Raw(volume_data));
+        }
+        else if(voxel_type=="int16"){
+            auto volume_data = mc::ReadRawVolume<int16_t>(raw_file.c_str(), raw_x, raw_y, raw_z);
+            volume_render.setupVolumeData(mc::ConvertToUint8Raw(volume_data));
+        }
+        else if(voxel_type=="uint32"){
+            auto volume_data = mc::ReadRawVolume<uint32_t>(raw_file.c_str(), raw_x, raw_y, raw_z);
+            volume_render.setupVolumeData(mc::ConvertToUint8Raw(volume_data));
+        }
+        else if(voxel_type=="int32"){
+            auto volume_data = mc::ReadRawVolume<int32_t>(raw_file.c_str(), raw_x, raw_y, raw_z);
+            volume_render.setupVolumeData(mc::ConvertToUint8Raw(volume_data));
+        }
 
         std::map<uint8_t, std::array<float, 4>> color_map;
 

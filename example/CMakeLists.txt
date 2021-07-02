@@ -11,3 +11,4 @@ target_include_directories(VolumeRender
         PRIVATE
         ${PROJECT_SOURCE_DIR}/third_party
 )
+target_compile_features(VolumeRender PRIVATE cxx_std_17)
