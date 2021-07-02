@@ -32,6 +32,8 @@ namespace mc{
 
         GLFWwindow *window;
         int window_w,window_h;
+        float min_board_x,min_board_y,min_board_z;
+        float max_board_x,max_board_y,max_board_z;
     };
 
 

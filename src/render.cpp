@@ -9,14 +9,34 @@
 #include<Render/transfer_function.h>
 #include<functional>
 #include<json.hpp>
+#include<limits>
 #include"shaders.hpp"
 namespace mc{
     SurfaceRenderer::SurfaceRenderer(int w,int h):window_w(w),window_h(h){
+        min_board_x=min_board_y=min_board_z=std::numeric_limits<float>::max();
+
+        max_board_x=max_board_y=max_board_z=-std::numeric_limits<float>::max();
+
 //        std::cout<<__FUNCTION__ <<std::endl;
     }
     void SurfaceRenderer::render(const IsoSurface<float>& isosurface) {
 //        std::cout<<__FUNCTION__ <<std::endl;
         auto vertices=isosurface.getAllVertices();
+        for(auto& it:vertices){
+            if(it[0]<min_board_x)
+                min_board_x=it[0];
+            if(it[1]<min_board_y)
+                min_board_y=it[1];
+            if(it[2]<min_board_z)
+                min_board_z=it[2];
+            if(it[0]>max_board_x)
+                max_board_x=it[0];
+            if(it[1]>max_board_y)
+                max_board_y=it[1];
+            if(it[2]>max_board_z)
+                max_board_z=it[2];
+        }
+        std::cout<<"model board: ("<<min_board_x<<" "<<min_board_y<<" "<<min_board_z<<")  ("<<max_board_x<<" "<<max_board_y<<" "<<max_board_z<<")"<<std::endl;
         vertex_num=vertices.size()/2;
         initGL();
         {
@@ -98,11 +118,13 @@ namespace mc{
 
             glm::mat4 projection=glm::perspective(glm::radians(camera->getZoom()),
                                                   (float)window_w/(float)window_h,
-                                                  0.1f,1000.0f);
+                                                  0.1f,2000.0f);
             glm::mat4 mvp=projection*view;
 
             shader->use();
             shader->setVec3("camera_pos",camera->getCameraPos());
+//            auto camera_pos=camera->getCameraPos();
+//            std::cout<<camera_pos.x<<" "<<camera_pos.y<<" "<<camera_pos.z<<std::endl;
             shader->setMat4("MVPMatrix",mvp);
             glBindVertexArray(vao);
             glDrawArrays(GL_TRIANGLES,0,vertex_num);
@@ -138,7 +160,11 @@ namespace mc{
 
     void SurfaceRenderer::setupControl() {
 //        std::cout<<__FUNCTION__ <<std::endl;
-        camera=std::make_unique<mc::FPSCamera>(glm::vec3{250.f,250.f,600.f});
+//        camera=std::make_unique<mc::FPSCamera>(glm::vec3{250.f,250.f,600.f});
+        camera=std::make_unique<mc::TrackBallCamera>(300,window_w,window_h,
+                                                     glm::vec3{(min_board_x+max_board_x)/2.f,
+                                                               (min_board_y+max_board_y)/2.f,
+                                                               (min_board_z+max_board_z)/2.f});
 
         framebuffer_resize_callback=[&](GLFWwindow *window, int width, int height){
 
@@ -146,19 +172,9 @@ namespace mc{
         };
 
         mouse_move_callback=[&](GLFWwindow *window, double xpos, double ypos){
-            static double last_x,last_y;
-            static bool first=true;
-            if(first){
-                first=false;
-                last_x=xpos;
-                last_y=ypos;
-            }
-            double delta_x=xpos-last_x;
-            double delta_y=last_y-ypos;
-            last_x=xpos;
-            last_y=ypos;
-            if(glfwGetMouseButton(window,GLFW_MOUSE_BUTTON_RIGHT)==GLFW_PRESS){
-                camera->processMouseMove(delta_x,delta_y);
+
+            if(glfwGetMouseButton(window,GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS){
+                camera->processMouseMove(xpos,ypos);
             }
         };
 
@@ -171,7 +187,13 @@ namespace mc{
                 glfwSetWindowShouldClose(window, true);
             }
         };
-
+        mouse_button_callback=[&](GLFWwindow* window, int button, int action, int mods){
+            if(button==GLFW_MOUSE_BUTTON_LEFT && action==GLFW_PRESS){
+                double x_pos,y_pos;
+                glfwGetCursorPos(window,&x_pos,&y_pos);
+                camera->processMouseButton(CameraDefinedMouseButton::Left,true,x_pos,y_pos);
+            }
+        };
         process_input=[&](GLFWwindow *window,float delta_time){
             if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
                 camera->processKeyEvent(mc::CameraDefinedKey::Forward, delta_time);
@@ -194,7 +216,7 @@ namespace mc{
             }
         };
         glfwSetFramebufferSizeCallback(window,glfw_framebuffer_resize_callback);
-//        glfwSetMouseButtonCallback(window,glfw_mouse_button_callback);
+        glfwSetMouseButtonCallback(window,glfw_mouse_button_callback);
         glfwSetCursorPosCallback(window,glfw_mouse_move_callback);
         glfwSetScrollCallback(window,glfw_scroll_callback);
         glfwSetKeyCallback(window,glfw_keyboard_callback);
@@ -319,7 +341,7 @@ namespace mc{
 
             glm::mat4 projection=glm::perspective(glm::radians(camera->getZoom()),
                                                   (float)window_w/(float)window_h,
-                                                  1.f,1000.0f);
+                                                  1.f,2000.0f);
             glm::mat4 mvp=projection*view;
 
             raycast_pos_shader->use();
@@ -341,14 +363,17 @@ namespace mc{
 
             raycasting_shader->use();
             auto view_pos=camera->getCameraPos();
+
             if(view_pos.x>=0.f && view_pos.x<=volume_data_dim[0]
             && view_pos.y>=0.f && view_pos.y<=volume_data_dim[1]
             && view_pos.z>=0.f && view_pos.z<=volume_data_dim[2]){
                 raycasting_shader->setBool("inside",true);
                 raycasting_shader->setVec3("view_pos",view_pos);
+//                std::cout<<"inside: "<<view_pos.x<<" "<<view_pos.y<<" "<<view_pos.z<<std::endl;
             }
             else{
                 raycasting_shader->setBool("inside",false);
+//                std::cout<<"outside: "<<view_pos.x<<" "<<view_pos.y<<" "<<view_pos.z<<std::endl;
             }
             glBindVertexArray(screen_quad_vao);
             glDrawArrays(GL_TRIANGLES,0,6);
@@ -360,7 +385,11 @@ namespace mc{
 
     void VolumeRender::setupCamera() {
 //        std::cout<<__FUNCTION__ <<std::endl;
-        camera=std::make_unique<mc::FPSCamera>(glm::vec3{250.f,250.f,600.f});
+//        camera=std::make_unique<mc::FPSCamera>(glm::vec3{250.f,250.f,600.f});
+        camera=std::make_unique<mc::TrackBallCamera>(300.f,window_w,window_h,
+                                                     glm::vec3{this->volume_data_dim[0]/2.f,
+                                                               this->volume_data_dim[1]/2.f,
+                                                               this->volume_data_dim[2]/2.f});
 
         framebuffer_resize_callback=[&](GLFWwindow *window, int width, int height){
 
@@ -368,19 +397,9 @@ namespace mc{
         };
 
         mouse_move_callback=[&](GLFWwindow *window, double xpos, double ypos){
-            static double last_x,last_y;
-            static bool first=true;
-            if(first){
-                first=false;
-                last_x=xpos;
-                last_y=ypos;
-            }
-            double delta_x=xpos-last_x;
-            double delta_y=last_y-ypos;
-            last_x=xpos;
-            last_y=ypos;
-            if(glfwGetMouseButton(window,GLFW_MOUSE_BUTTON_RIGHT)==GLFW_PRESS){
-                camera->processMouseMove(delta_x,delta_y);
+
+            if(glfwGetMouseButton(window,GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS){
+                camera->processMouseMove(xpos,ypos);
             }
         };
 
@@ -441,8 +460,15 @@ namespace mc{
                 camera->processKeyEvent(mc::CameraDefinedKey::Bottom, delta_time);
             }
         };
+        mouse_button_callback=[&](GLFWwindow* window, int button, int action, int mods){
+            if(button==GLFW_MOUSE_BUTTON_LEFT && action==GLFW_PRESS){
+                double x_pos,y_pos;
+                glfwGetCursorPos(window,&x_pos,&y_pos);
+                camera->processMouseButton(CameraDefinedMouseButton::Left,true,x_pos,y_pos);
+            }
+        };
         glfwSetFramebufferSizeCallback(window,glfw_framebuffer_resize_callback);
-//        glfwSetMouseButtonCallback(window,glfw_mouse_button_callback);
+        glfwSetMouseButtonCallback(window,glfw_mouse_button_callback);
         glfwSetCursorPosCallback(window,glfw_mouse_move_callback);
         glfwSetScrollCallback(window,glfw_scroll_callback);
         glfwSetKeyCallback(window,glfw_keyboard_callback);
