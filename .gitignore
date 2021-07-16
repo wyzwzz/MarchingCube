@@ -1,3 +1,5 @@
 cmake-build-debug
 cmake-build-release
 test_data
+.vscode
+.idea
