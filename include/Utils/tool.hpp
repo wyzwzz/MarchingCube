@@ -16,5 +16,4 @@ auto _t=std::chrono::duration_cast<std::chrono::milliseconds>(_end-_start);\
 std::cout<<"CPU cost time : "<<_t.count()<<"ms"<<std::endl;
 
 
-
 #endif //MARCHINGCUBES_TOOL_HPP

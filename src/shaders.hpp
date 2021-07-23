@@ -1,7 +1,7 @@
 #pragma once
 
-namespace shader{
-    const char* phone_shading_v=R"(#version 430 core
+namespace shader {
+    const char *phone_shading_v = R"(#version 430 core
 layout(location=0) in vec3 vertexPos;
 layout(location=1) in vec3 normal;
 uniform mat4 MVPMatrix;
@@ -14,7 +14,7 @@ void main() {
 }
 )";
 
-    const char* phone_shading_f=R"(#version 430 core
+    const char *phone_shading_f = R"(#version 430 core
 
 flat in vec3 n;
 in vec3 world_pos;
@@ -42,7 +42,7 @@ void main() {
 }
 )";
 
-    const char* raycast_pos_v=R"(#version 430 core
+    const char *raycast_pos_v = R"(#version 430 core
 layout(location=0) in vec3 vertex_pos;
 uniform mat4 MVPMatrix;
 out vec3 world_pos;
@@ -52,7 +52,7 @@ void main()
     world_pos=vertex_pos;
 })";
 
-    const char* raycast_pos_f=R"(#version 430 core
+    const char *raycast_pos_f = R"(#version 430 core
 uniform uint max_dim;
 in vec3 world_pos;
 out vec4 frag_color;
@@ -62,7 +62,7 @@ void main()
 }
 )";
 
-    const char* raycasting_v=R"(#version 430 core
+    const char *raycasting_v = R"(#version 430 core
 layout(location=0) in vec2 vertex_pos;
 void main()
 {
@@ -70,7 +70,7 @@ void main()
 }
 )";
 
-    const char* raycasting_f=R"(#version 430 core
+    const char *raycasting_f = R"(#version 430 core
 out vec4 frag_color;
 layout(binding=0,rgba32f) uniform image2D entry_pos;
 layout(binding=1,rgba32f) uniform image2D exit_pos;

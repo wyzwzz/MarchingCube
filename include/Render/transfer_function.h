@@ -4,111 +4,131 @@
 
 #ifndef VOLUMERENDER_TRANSFERFUNC_H
 #define VOLUMERENDER_TRANSFERFUNC_H
+
 #include<map>
 #include <utility>
 #include<vector>
 #include<cmath>
 #include<iostream>
 #include<array>
+
 #define TF_DIM 256
-namespace mc{
-    class TransferFunc{
+namespace mc {
+    class TransferFunc {
     public:
-        explicit TransferFunc(std::map<uint8_t ,std::array<float,4>> color_setting):color_setting(std::move(color_setting)){};
-        explicit TransferFunc(const std::map<float ,std::array<float,4>>& color_setting){
-            for(const auto & it : color_setting){
-                if(it.first>1.f ||it.first<0.f){
+        explicit TransferFunc(std::map<uint8_t, std::array<float, 4>> color_setting) : color_setting(
+                std::move(color_setting)) {};
+
+        explicit TransferFunc(const std::map<float, std::array<float, 4>> &color_setting) {
+            for (const auto &it : color_setting) {
+                if (it.first > 1.f || it.first < 0.f) {
                     continue;
                 }
-                this->color_setting[it.first*255]=it.second;
+                this->color_setting[it.first * 255] = it.second;
             }
         };
-        auto getTransferFunction()->std::vector<float>&{
-            if(transfer_func.empty())
+
+        auto getTransferFunction() -> std::vector<float> & {
+            if (transfer_func.empty())
                 generateTransferFunc();
             return transfer_func;
         }
-        void resetTransferFunc(std::map<uint8_t,std::array<float,4>> color_setting){
-            this->color_setting=color_setting;
+
+        void resetTransferFunc(std::map<uint8_t, std::array<float, 4>> color_setting) {
+            this->color_setting = color_setting;
             transfer_func.clear();
             preint_transfer_func.clear();
         }
-        auto getPreIntTransferFunc()->std::vector<float>&{
-            if(preint_transfer_func.empty())
+
+        auto getPreIntTransferFunc() -> std::vector<float> & {
+            if (preint_transfer_func.empty())
                 generatePreIntTransferFunc();
             return preint_transfer_func;
         }
+
     private:
         void generateTransferFunc();
+
         void generatePreIntTransferFunc();
+
     private:
-        std::map<uint8_t,std::array<float,4>> color_setting;
+        std::map<uint8_t, std::array<float, 4>> color_setting;
         std::vector<float> transfer_func;
         std::vector<float> preint_transfer_func;
-        const int base_sampler_number=20;
-        const int ratio=1;
+        const int base_sampler_number = 20;
+        const int ratio = 1;
     };
 
-    inline void TransferFunc::generateTransferFunc()
-    {
-        transfer_func.resize(TF_DIM*4);
+    inline void TransferFunc::generateTransferFunc() {
+        transfer_func.resize(TF_DIM * 4);
         std::vector<uint8_t> keys;
-        for(auto it:color_setting)
+        for (auto it:color_setting)
             keys.emplace_back(it.first);
-        size_t size=keys.size();
-        for(size_t i=0;i<keys[0];i++){
-            transfer_func[i*4+0]=color_setting[keys[0]][0];
-            transfer_func[i*4+1]=color_setting[keys[0]][1];
-            transfer_func[i*4+2]=color_setting[keys[0]][2];
-            transfer_func[i*4+3]=color_setting[keys[0]][3];
+        size_t size = keys.size();
+        for (size_t i = 0; i < keys[0]; i++) {
+            transfer_func[i * 4 + 0] = color_setting[keys[0]][0];
+            transfer_func[i * 4 + 1] = color_setting[keys[0]][1];
+            transfer_func[i * 4 + 2] = color_setting[keys[0]][2];
+            transfer_func[i * 4 + 3] = color_setting[keys[0]][3];
         }
-        for(size_t i=keys[size-1];i<TF_DIM;i++){
-            transfer_func[i*4+0]=color_setting[keys[size-1]][0];
-            transfer_func[i*4+1]=color_setting[keys[size-1]][1];
-            transfer_func[i*4+2]=color_setting[keys[size-1]][2];
-            transfer_func[i*4+3]=color_setting[keys[size-1]][3];
+        for (size_t i = keys[size - 1]; i < TF_DIM; i++) {
+            transfer_func[i * 4 + 0] = color_setting[keys[size - 1]][0];
+            transfer_func[i * 4 + 1] = color_setting[keys[size - 1]][1];
+            transfer_func[i * 4 + 2] = color_setting[keys[size - 1]][2];
+            transfer_func[i * 4 + 3] = color_setting[keys[size - 1]][3];
         }
-        for(size_t i=1;i<size;i++){
-            int left=keys[i-1],right=keys[i];
-            auto left_color=color_setting[left];
-            auto right_color=color_setting[right];
+        for (size_t i = 1; i < size; i++) {
+            int left = keys[i - 1], right = keys[i];
+            auto left_color = color_setting[left];
+            auto right_color = color_setting[right];
 
-            for(size_t j=left;j<=right;j++){
-                transfer_func[j*4+0]=1.0f*(j-left)/(right-left)*right_color[0]+1.0f*(right-j)/(right-left)*left_color[0];
-                transfer_func[j*4+1]=1.0f*(j-left)/(right-left)*right_color[1]+1.0f*(right-j)/(right-left)*left_color[1];
-                transfer_func[j*4+2]=1.0f*(j-left)/(right-left)*right_color[2]+1.0f*(right-j)/(right-left)*left_color[2];
-                transfer_func[j*4+3]=1.0f*(j-left)/(right-left)*right_color[3]+1.0f*(right-j)/(right-left)*left_color[3];
+            for (size_t j = left; j <= right; j++) {
+                transfer_func[j * 4 + 0] = 1.0f * (j - left) / (right - left) * right_color[0] +
+                                           1.0f * (right - j) / (right - left) * left_color[0];
+                transfer_func[j * 4 + 1] = 1.0f * (j - left) / (right - left) * right_color[1] +
+                                           1.0f * (right - j) / (right - left) * left_color[1];
+                transfer_func[j * 4 + 2] = 1.0f * (j - left) / (right - left) * right_color[2] +
+                                           1.0f * (right - j) / (right - left) * left_color[2];
+                transfer_func[j * 4 + 3] = 1.0f * (j - left) / (right - left) * right_color[3] +
+                                           1.0f * (right - j) / (right - left) * left_color[3];
             }
         }
     }
 
-    inline void TransferFunc::generatePreIntTransferFunc()
-    {
-        if(transfer_func.empty())
+    inline void TransferFunc::generatePreIntTransferFunc() {
+        if (transfer_func.empty())
             generateTransferFunc();
-        preint_transfer_func.resize(4*TF_DIM*TF_DIM);
+        preint_transfer_func.resize(4 * TF_DIM * TF_DIM);
 
-        float rayStep=1.0;
-        for(int sb=0;sb<TF_DIM;sb++){
-            for(int sf=0;sf<=sb;sf++){
-                int offset=sf!=sb;
-                int n=base_sampler_number+ratio*std::abs(sb-sf);
-                float stepWidth=rayStep/n;
-                float rgba[4]={0,0,0,0};
-                for(int i=0;i<n;i++){
-                    float s=sf+(sb-sf)*(float)i / n;
-                    float sFrac=s-std::floor(s);
-                    float opacity=(transfer_func[int(s)*4+3]*(1.f-sFrac)+transfer_func[((int)s+offset)*4+3]*sFrac)*stepWidth;
-                    float temp=std::exp(-rgba[3])*opacity;
-                    rgba[0]+=(transfer_func[(int)s*4+0]*(1.f-sFrac)+transfer_func[(int(s)+offset)*4+0]*sFrac)*temp;
-                    rgba[1]+=(transfer_func[(int)s*4+1]*(1.f-sFrac)+transfer_func[(int(s)+offset)*4+1]*sFrac)*temp;
-                    rgba[2]+=(transfer_func[(int)s*4+2]*(1.f-sFrac)+transfer_func[(int(s)+offset)*4+2]*sFrac)*temp;
-                    rgba[3]+=opacity;
+        float rayStep = 1.0;
+        for (int sb = 0; sb < TF_DIM; sb++) {
+            for (int sf = 0; sf <= sb; sf++) {
+                int offset = sf != sb;
+                int n = base_sampler_number + ratio * std::abs(sb - sf);
+                float stepWidth = rayStep / n;
+                float rgba[4] = {0, 0, 0, 0};
+                for (int i = 0; i < n; i++) {
+                    float s = sf + (sb - sf) * (float) i / n;
+                    float sFrac = s - std::floor(s);
+                    float opacity = (transfer_func[int(s) * 4 + 3] * (1.f - sFrac) +
+                                     transfer_func[((int) s + offset) * 4 + 3] * sFrac) * stepWidth;
+                    float temp = std::exp(-rgba[3]) * opacity;
+                    rgba[0] += (transfer_func[(int) s * 4 + 0] * (1.f - sFrac) +
+                                transfer_func[(int(s) + offset) * 4 + 0] * sFrac) * temp;
+                    rgba[1] += (transfer_func[(int) s * 4 + 1] * (1.f - sFrac) +
+                                transfer_func[(int(s) + offset) * 4 + 1] * sFrac) * temp;
+                    rgba[2] += (transfer_func[(int) s * 4 + 2] * (1.f - sFrac) +
+                                transfer_func[(int(s) + offset) * 4 + 2] * sFrac) * temp;
+                    rgba[3] += opacity;
                 }
-                preint_transfer_func[(sf*TF_DIM+sb)*4+0]=preint_transfer_func[(sb*TF_DIM+sf)*4+0]=rgba[0];
-                preint_transfer_func[(sf*TF_DIM+sb)*4+1]=preint_transfer_func[(sb*TF_DIM+sf)*4+1]=rgba[1];
-                preint_transfer_func[(sf*TF_DIM+sb)*4+2]=preint_transfer_func[(sb*TF_DIM+sf)*4+2]=rgba[2];
-                preint_transfer_func[(sf*TF_DIM+sb)*4+3]=preint_transfer_func[(sb*TF_DIM+sf)*4+3]=1.0-std::exp(-rgba[3]);
+                preint_transfer_func[(sf * TF_DIM + sb) * 4 + 0] = preint_transfer_func[(sb * TF_DIM + sf) * 4 +
+                                                                                        0] = rgba[0];
+                preint_transfer_func[(sf * TF_DIM + sb) * 4 + 1] = preint_transfer_func[(sb * TF_DIM + sf) * 4 +
+                                                                                        1] = rgba[1];
+                preint_transfer_func[(sf * TF_DIM + sb) * 4 + 2] = preint_transfer_func[(sb * TF_DIM + sf) * 4 +
+                                                                                        2] = rgba[2];
+                preint_transfer_func[(sf * TF_DIM + sb) * 4 + 3] = preint_transfer_func[(sb * TF_DIM + sf) * 4 + 3] =
+                        1.0 - std::exp(-rgba[3]);
             }
         }
     }

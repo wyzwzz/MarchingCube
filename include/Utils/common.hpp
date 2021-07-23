@@ -4,8 +4,8 @@
 
 #ifndef MARCHINGCUBES_COMMON_HPP
 #define MARCHINGCUBES_COMMON_HPP
-namespace mc{
-    enum class InterpolationMethod{
+namespace mc {
+    enum class InterpolationMethod {
         MidPoint,
         Linear,
         Cubic

@@ -4,13 +4,15 @@
 
 #ifndef MARCHINGCUBES_ISOLINE_HPP
 #define MARCHINGCUBES_ISOLINE_HPP
+
 #include<Utils/edge.hpp>
 #include<vector>
-namespace mc{
+
+namespace mc {
 
 
-    template <class T>
-    class IsoLine{
+    template<class T>
+    class IsoLine {
     public:
 
 
