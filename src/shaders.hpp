@@ -28,7 +28,7 @@ uniform vec3 light_direction;
 uniform vec3 camera_pos;
 out vec4 frag_color;
 void main() {
-    vec4 diffuse_color=vec4(0.1f,0.9f,0.f,1.f);
+    vec4 diffuse_color=vec4(0.8f,0.8f,0.8f,1.f);
     vec3 L=normalize(world_pos-camera_pos);
     vec3 R=L;//-ray_direction;
     vec3 N=-n;
